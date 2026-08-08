@@ -154,7 +154,11 @@ public class SpotifyBot extends TelegramLongPollingBot {
 
             sendMessage(chatId, msg);
         } else {
-            sendMessage(chatId, "👋 Bentornato " + userName + "! Sei già registrato nel sistema. Digita /saldo per vedere la tua situazione.");
+            if (chatId.equals(adminId)) {
+                sendMessage(chatId, "👑 Bentornato mio capo supremo " + friendRepository.findByTelegramUserId(adminId).get().getName() + ". Puoi usare i comandi /saldo, /versa e /aggiungi.");
+            }else {
+                sendMessage(chatId, "👋 Bentornato " + userName + "! Sei già registrato nel sistema. Digita /saldo per vedere la tua situazione.");
+            }
         }
     }
 

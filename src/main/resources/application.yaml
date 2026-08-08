@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: spotify-payment-manager
+  profiles:
+    active: local # Attiva in automatico le impostazioni di application-local.yml
+
+app:
+  spotify:
+    monthly-fee: 3.50
+    cron-schedule: "0 0 9 6 * ?"
+  payment:
+    info: "Puoi inviare la quota via postepay o intesa san paolo. Se vuoi pagare con un altro metodo, contatta Antonio."
+
+telegram:
+  bot:
+    username: ${TELEGRAM_BOT_USERNAME:YourSpotifyDebtBot}
+    token: ${TELEGRAM_BOT_TOKEN:your_bot_token_here}
+    admin-id: ${TELEGRAM_ADMIN_ID:000000000}

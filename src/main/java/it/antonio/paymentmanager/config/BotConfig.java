@@ -1,4 +1,4 @@
-package it.antonio.paymentmanager.entity;
+package it.antonio.paymentmanager.config;
 import it.antonio.paymentmanager.telegram.SpotifyBot;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

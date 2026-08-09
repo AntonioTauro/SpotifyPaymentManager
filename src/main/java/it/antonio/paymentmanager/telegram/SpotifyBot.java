@@ -80,7 +80,7 @@ public class SpotifyBot extends TelegramLongPollingBot {
             } else {
                 // Messaggio di errore differenziato
                 if (isAdmin) {
-                    sendMessage(chatId, "❓ Comando non riconosciuto. Usa /saldo,\n /versa, /aggiungi, /set, /disattiva, /attiva.");
+                    sendMessage(chatId, "❓ Comando non riconosciuto. Usa /saldo, /versa, /aggiungi, /set, /disattiva, /attiva.");
                 } else {
                     sendMessage(chatId, "❓ Comando non riconosciuto. Puoi usare solo il comando /saldo.");
                 }
@@ -161,7 +161,7 @@ public class SpotifyBot extends TelegramLongPollingBot {
             sendMessage(chatId, msg);
         } else {
             if (chatId.equals(adminId)) {
-                sendMessage(chatId, "👑 Bentornato mio capo supremo " + friendRepository.findByTelegramUserId(adminId).get().getName() + ". Puoi usare i comandi /saldo, /versa, /aggiungi,\n /set, /attiva, /disattiva.");
+                sendMessage(chatId, "👑 Bentornato mio capo supremo " + friendRepository.findByTelegramUserId(adminId).get().getName() + ". Puoi usare i comandi /saldo, /versa, /aggiungi, /set, /attiva, /disattiva.");
             }else {
                 sendMessage(chatId, "👋 Bentornato " + userName + "! Sei già registrato nel sistema. Digita /saldo per vedere la tua situazione.");
             }

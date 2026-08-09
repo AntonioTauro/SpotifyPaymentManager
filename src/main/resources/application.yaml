@@ -2,15 +2,16 @@ spring:
   application:
     name: spotify-payment-manager
   profiles:
-    active: local # Attiva in automatico le impostazioni di application-local.yml
+    active: local
 
   datasource:
     url: jdbc:sqlite:spotify_debt.db
     driver-class-name: org.sqlite.JDBC
-    jpa:
-      database-platform: org.hibernate.community.dialect.SQLiteDialect
-      hibernate:
-        ddl-auto: update
+
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
 
 app:
   spotify:

@@ -220,8 +220,8 @@ public class SpotifyBot extends TelegramLongPollingBot {
 
         // Estrazione dei parametri (es: "/aggiungi Marco 123456789")
         String[] parts = messageText.split(" ");
-        if (parts.length != 3) {
-            sendMessage(chatId, "⚠️ Formato errato. Usa: /aggiungi <Nome> <ID_Telegram>");
+        if (parts.length < 3 || parts.length > 4) {
+            sendMessage(chatId, "⚠️ Formato errato. Usa: /aggiungi <Nome> <ID_Telegram> oppure /aggiungi <Nome> <ID_Telegram> <Saldo_Iniziale>");
             return;
         }
 
@@ -234,7 +234,14 @@ public class SpotifyBot extends TelegramLongPollingBot {
             sendMessage(chatId, "⚠️ L'ID Telegram deve essere un numero valido.");
             return;
         }
-
+        BigDecimal amount = BigDecimal.ZERO;
+        if (parts.length == 4) {
+            try {
+                amount = new BigDecimal(parts[3]);
+            } catch (NumberFormatException e) {
+                sendMessage(chatId,"Errore nella scrittura del saldo");
+            }
+        }
         // Controllo per evitare duplicati nel database
         if (friendRepository.findByTelegramUserId(targetUserId).isPresent()) {
             sendMessage(chatId, "⚠️ Attenzione: L'utente con ID " + targetUserId + " è già presente nel database!");
@@ -245,7 +252,7 @@ public class SpotifyBot extends TelegramLongPollingBot {
         Friend newFriend = Friend.builder()
                 .name(nome)
                 .telegramUserId(targetUserId)
-                .balance(BigDecimal.ZERO)
+                .balance(amount)
                 .active(true)
                 .build();
 

@@ -4,6 +4,14 @@ spring:
   profiles:
     active: local # Attiva in automatico le impostazioni di application-local.yml
 
+  datasource:
+    url: jdbc:sqlite:spotify_debt.db
+    driver-class-name: org.sqlite.JDBC
+    jpa:
+      database-platform: org.hibernate.community.dialect.SQLiteDialect
+      hibernate:
+        ddl-auto: update
+
 app:
   spotify:
     monthly-fee: 3.50

@@ -18,6 +18,8 @@ application-local.yml
 *.iws
 *.iml
 *.ipr
+*.db
+spotify_debt.db
 
 ### NetBeans ###
 /nbproject/private/

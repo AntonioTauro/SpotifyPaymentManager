@@ -13,4 +13,5 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
     Optional<Friend> findByTelegramUserId(Long telegramUserId);
     List<Friend> findByActiveTrue();
     List<Friend> findByBalanceLessThan(BigDecimal amount);
+    Optional<Friend> findByName(String name);
 }

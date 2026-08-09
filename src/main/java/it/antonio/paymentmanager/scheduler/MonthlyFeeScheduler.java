@@ -21,6 +21,8 @@ import java.util.List;
 public class MonthlyFeeScheduler {
     private final TransactionRepository transactionRepository;
     private final FriendRepository friendRepository;
+    @Value("${telegram.bot.admin-id}")
+    private Long adminId;
     @Value("${app.spotify.monthly-fee}")
     private BigDecimal monthlyFee;
     @Scheduled (cron = "${app.spotify.cron-schedule}")
@@ -29,16 +31,18 @@ public class MonthlyFeeScheduler {
         log.info("Processing Monthly fee scheduled");
         List<Friend> activeFriends = friendRepository.findByActiveTrue();
         for (Friend friend : activeFriends) {
-            friend.setBalance(friend.getBalance().subtract(monthlyFee));
-            friendRepository.save(friend);
-            Transaction transaction = Transaction.builder()
-                    .friend(friend)
-                    .amount(monthlyFee.negate())
-                    .date(LocalDateTime.now())
-                    .type(TransactionType.MONTHLY_FEE)
-                    .build();
-            transactionRepository.save(transaction);
-            log.info("Added transaction per l'utente {}", friend.getName());
+            if (!friend.getTelegramUserId().equals(adminId)) {
+                friend.setBalance(friend.getBalance().subtract(monthlyFee));
+                friendRepository.save(friend);
+                Transaction transaction = Transaction.builder()
+                        .friend(friend)
+                        .amount(monthlyFee.negate())
+                        .date(LocalDateTime.now())
+                        .type(TransactionType.MONTHLY_FEE)
+                        .build();
+                transactionRepository.save(transaction);
+                log.info("Added transaction per l'utente {}", friend.getName());
+            }
         }
         log.info("Monthly fee scheduled done");
     }

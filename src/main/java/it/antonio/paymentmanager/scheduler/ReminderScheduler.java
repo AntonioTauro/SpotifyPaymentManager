@@ -5,6 +5,7 @@ import it.antonio.paymentmanager.telegram.SpotifyBot;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,8 @@ public class ReminderScheduler {
     private static final Logger logger = LoggerFactory.getLogger(ReminderScheduler.class);
     private final FriendRepository friendRepository;
     private final SpotifyBot spotifyBot;
+    @Value("${telegram.bot.admin-id}")
+    private Long adminId;
 
     @Scheduled(cron = "0 0 10 * * *")
     public void processReminders() {
@@ -45,7 +48,7 @@ public class ReminderScheduler {
                     urgencyLabel = "🔔 Promemoria Settimanale";
                 }
             }
-            if (toBeReminded) {
+            if (toBeReminded && !friend.getTelegramUserId().equals(adminId)) {
                 String msg = urgencyLabel + "\n\n" +
                         "Ciao " + friend.getName() + ",\n" +
                         "Il tuo saldo è in rosso di " + balance.abs() + "€.\n" +

@@ -71,10 +71,16 @@ public class SpotifyBot extends TelegramLongPollingBot {
                 handleVersa(chatId, messageText); // Permesso SOLO all'Admin
             } else if (messageText.startsWith("/aggiungi") && isAdmin) {
                 handleAggiungi(chatId, messageText); // Permesso SOLO all'Admin
+            } else if (messageText.startsWith("/set") && isAdmin) {
+                handleSet(chatId,messageText);
+            } else if (messageText.startsWith("/disattiva") && isAdmin) {
+                handleDisattiva(chatId,messageText);
+            } else if (messageText.startsWith("/attiva") && isAdmin) {
+                handleAttiva(chatId,messageText);
             } else {
                 // Messaggio di errore differenziato
                 if (isAdmin) {
-                    sendMessage(chatId, "❓ Comando non riconosciuto. Usa /saldo, /versa o /aggiungi.");
+                    sendMessage(chatId, "❓ Comando non riconosciuto. Usa /saldo,\n /versa, /aggiungi, /set, /disattiva, /attiva.");
                 } else {
                     sendMessage(chatId, "❓ Comando non riconosciuto. Puoi usare solo il comando /saldo.");
                 }
@@ -155,7 +161,7 @@ public class SpotifyBot extends TelegramLongPollingBot {
             sendMessage(chatId, msg);
         } else {
             if (chatId.equals(adminId)) {
-                sendMessage(chatId, "👑 Bentornato mio capo supremo " + friendRepository.findByTelegramUserId(adminId).get().getName() + ". Puoi usare i comandi /saldo, /versa e /aggiungi.");
+                sendMessage(chatId, "👑 Bentornato mio capo supremo " + friendRepository.findByTelegramUserId(adminId).get().getName() + ". Puoi usare i comandi /saldo, /versa, /aggiungi,\n /set, /attiva, /disattiva.");
             }else {
                 sendMessage(chatId, "👋 Bentornato " + userName + "! Sei già registrato nel sistema. Digita /saldo per vedere la tua situazione.");
             }
@@ -240,6 +246,7 @@ public class SpotifyBot extends TelegramLongPollingBot {
                 amount = new BigDecimal(parts[3]);
             } catch (NumberFormatException e) {
                 sendMessage(chatId,"Errore nella scrittura del saldo");
+                return;
             }
         }
         // Controllo per evitare duplicati nel database
@@ -262,5 +269,97 @@ public class SpotifyBot extends TelegramLongPollingBot {
         sendMessage(chatId, "✅ Utente " + nome + " aggiunto con successo al database!");
         // Notifica Push automatica all'amico appena inserito
         sendMessage(targetUserId, "🎉 Ciao " + nome + ", Antonio ti ha appena aggiunto al gestore quote Spotify! Digita /saldo per iniziare.");
+    }
+
+    private void handleSet(Long chatId, String messageText) {
+        if (!chatId.equals(adminId)) {
+            sendMessage(chatId, "⛔ Accesso Negato: solo l'amministratore può usare questo comando.");
+            return;
+        }
+        String[] parts = messageText.split(" ");
+        if (parts.length != 3) {
+            sendMessage(chatId, "⚠️ Formato errato. Usa: /set <ID_Telegram_Amico> <Saldo>");
+            return;
+        }
+        Long targetUserId;
+        try {
+            targetUserId = Long.parseLong(parts[1]);
+        }  catch (NumberFormatException e) {
+            sendMessage(chatId, "⚠️ L'ID Telegram deve essere un numero valido.");
+            return;
+        }
+        BigDecimal amount;
+        try {
+            amount = new BigDecimal(parts[2]);
+        } catch (NumberFormatException e) {
+            sendMessage(chatId, "⚠️ Il saldo deve essere un numero valido.");
+            return;
+        }
+        Optional<Friend> optional = friendRepository.findByTelegramUserId(targetUserId);
+        if (optional.isEmpty()) {
+            sendMessage(chatId, "⚠️ Utente con ID " + targetUserId + " non trovato.");
+            return;
+        }
+        Friend friend = optional.get();
+        friend.setBalance(amount);
+        friendRepository.save(friend);
+        sendMessage(chatId, "✅ Saldo aggiornato per l'utente " + friend.getName() + ".");
+        sendMessage(targetUserId, "✅ Il tuo saldo è stato aggiornato da Antonio a " + amount + ".");
+    }
+
+    private void handleDisattiva(Long chatId, String messageText) {
+        if (!chatId.equals(adminId)) {
+            sendMessage(chatId, "⛔ Accesso Negato: solo l'amministratore può usare questo comando.");
+            return;
+        }
+        String[] parts = messageText.split(" ");
+        if (parts.length != 2) {
+            sendMessage(chatId, "⚠️ Formato errato. Usa: /disattiva <ID_Telegram_Amico>");
+            return;
+        }
+        Long targetUserId;
+        try {
+            targetUserId = Long.parseLong(parts[1]);
+        }  catch (NumberFormatException e) {
+            sendMessage(chatId, "⚠️ L'ID Telegram deve essere un numero valido.");
+            return;
+        }
+        Optional<Friend> optional = friendRepository.findByTelegramUserId(targetUserId);
+        if (optional.isEmpty()) {
+            sendMessage(chatId, "⚠️ Utente con ID " + targetUserId + " non trovato.");
+            return;
+        }
+        Friend friend = optional.get();
+        friend.setActive(false);
+        friendRepository.save(friend);
+        sendMessage(chatId, "✅ Utente " + friend.getName() + " disattivato con successo.");
+    }
+    private void handleAttiva(Long chatId, String messageText) {
+        if (!chatId.equals(adminId)) {
+            sendMessage(chatId, "⛔ Accesso Negato: solo l'amministratore può usare questo comando.");
+            return;
+        }
+        String[] parts = messageText.split(" ");
+        if (parts.length != 2) {
+            sendMessage(chatId, "⚠️ Formato errato. Usa: /attiva <ID_Telegram_Amico>");
+            return;
+        }
+        Long targetUserId;
+        try {
+            targetUserId = Long.parseLong(parts[1]);
+        }  catch (NumberFormatException e) {
+            sendMessage(chatId, "⚠️ L'ID Telegram deve essere un numero valido.");
+            return;
+        }
+        Optional<Friend> optional = friendRepository.findByTelegramUserId(targetUserId);
+        if (optional.isEmpty()) {
+            sendMessage(chatId, "⚠️ Utente con ID " + targetUserId + " non trovato.");
+            return;
+        }
+        Friend friend = optional.get();
+        friend.setActive(true);
+        friendRepository.save(friend);
+        sendMessage(chatId, "✅ Utente " + friend.getName() + " attivato con successo.");
+        sendMessage(targetUserId, "✅ Sei stato inserito da Antonio nella lista spotify.");
     }
 }

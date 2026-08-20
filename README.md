@@ -95,3 +95,8 @@ docker run -d \
 3. Select **Docker** as the environment.
 4. Add your runtime environment variables (`TELEGRAM_BOT_USERNAME`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_ID`).
 5. Click **Deploy**.
+
+## 📌 Scope & Design Note
+
+> **Note:** This project is intentionally designed as a **lightweight, single-instance personal automation tool** rather than a multi-tenant, scalable cloud service. It is specifically tailored to manage recurring expense tracking for a single private group. If you want to run an instance, you have to update some files of code; make you sure that you have done so or it will not work. Language: ITALIAN
+
